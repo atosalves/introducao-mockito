@@ -95,4 +95,29 @@ public class TaskServiceTest {
                 verify(taskRepository).findAll();
         }
 
+        @Test
+        void testUpdateTask() {
+                TaskEntity task = new TaskEntity();
+                task.setId(1L);
+                task.setTitle("task title");
+                task.setDescription("task description");
+                task.setCompleted(false);
+
+                when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+                when(taskRepository.save(any(TaskEntity.class))).thenAnswer(invoker -> invoker.getArgument(0));
+
+                TaskEntity updatedTask = new TaskEntity();
+                updatedTask.setTitle("updated title");
+                updatedTask.setDescription("updated description");
+                updatedTask.setCompleted(true);
+
+                TaskEntity result = taskService.updateTask(1L, updatedTask);
+
+                assertNotNull(result);
+                assertEquals("updated title", result.getTitle());
+
+                verify(taskRepository).findById(1L);
+                verify(taskRepository).save(task);
+        }
+
 }
