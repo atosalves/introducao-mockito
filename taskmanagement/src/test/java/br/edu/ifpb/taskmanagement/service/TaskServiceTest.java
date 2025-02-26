@@ -7,6 +7,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,7 +52,7 @@ public class TaskServiceTest {
                 task.setDescription("task description");
                 task.setCompleted(false);
 
-                when(taskRepository.findById(1L)).thenReturn(java.util.Optional.of(task));
+                when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
 
                 TaskEntity foundTask = taskService.getTaskById(1L);
 
@@ -61,11 +64,35 @@ public class TaskServiceTest {
 
         @Test
         void testGetTaskByIdNotFound() {
-                when(taskRepository.findById(1L)).thenReturn(java.util.Optional.empty());
+                when(taskRepository.findById(1L)).thenReturn(Optional.empty());
 
                 assertThrows(RuntimeException.class, () -> taskService.getTaskById(1L));
 
                 verify(taskRepository).findById(1L);
+        }
+
+        @Test
+        void testGetAllTasks() {
+                TaskEntity task1 = new TaskEntity();
+                task1.setId(1L);
+                task1.setTitle("task title 1");
+                task1.setDescription("task description 1");
+                task1.setCompleted(false);
+
+                TaskEntity task2 = new TaskEntity();
+                task2.setId(2L);
+                task2.setTitle("task title 2");
+                task2.setDescription("task description 2");
+                task2.setCompleted(true);
+
+                when(taskRepository.findAll()).thenReturn(List.of(task1, task2));
+
+                List<TaskEntity> tasks = taskService.getAllTasks();
+
+                assertNotNull(tasks);
+                assertEquals(2, tasks.size());
+
+                verify(taskRepository).findAll();
         }
 
 }
