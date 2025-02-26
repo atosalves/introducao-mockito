@@ -2,6 +2,7 @@ package br.edu.ifpb.taskmanagement.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,6 +39,33 @@ public class TaskServiceTest {
                 assertEquals("task title", createdTask.getTitle());
 
                 verify(taskRepository).save(task);
+        }
+
+        @Test
+        void testGetTaskById() {
+                TaskEntity task = new TaskEntity();
+                task.setId(1L);
+                task.setTitle("task title");
+                task.setDescription("task description");
+                task.setCompleted(false);
+
+                when(taskRepository.findById(1L)).thenReturn(java.util.Optional.of(task));
+
+                TaskEntity foundTask = taskService.getTaskById(1L);
+
+                assertNotNull(foundTask);
+                assertEquals("task title", foundTask.getTitle());
+
+                verify(taskRepository).findById(1L);
+        }
+
+        @Test
+        void testGetTaskByIdNotFound() {
+                when(taskRepository.findById(1L)).thenReturn(java.util.Optional.empty());
+
+                assertThrows(RuntimeException.class, () -> taskService.getTaskById(1L));
+
+                verify(taskRepository).findById(1L);
         }
 
 }
