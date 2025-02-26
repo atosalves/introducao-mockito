@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -118,6 +119,30 @@ public class TaskServiceTest {
 
                 verify(taskRepository).findById(1L);
                 verify(taskRepository).save(task);
+        }
+
+        @Test
+        void testDeleteTask() {
+                TaskEntity task = new TaskEntity();
+                task.setId(1L);
+                task.setTitle("task title");
+                task.setDescription("task description");
+                task.setCompleted(false);
+
+                when(taskRepository.existsById(1L)).thenReturn(true);
+
+                taskService.deleteTask(1L);
+
+                verify(taskRepository).deleteById(1L);
+        }
+
+        @Test
+        void testDeleteTaskNotExists() {
+                when(taskRepository.existsById(1L)).thenReturn(false);
+
+                assertThrows(RuntimeException.class, () -> taskService.deleteTask(1L));
+
+                verify(taskRepository, times(0)).deleteById(1L);
         }
 
 }
