@@ -55,4 +55,29 @@ public class TaskRepositoryIntegrationTest {
         assertEquals(savedTask, opTask.get());
     }
 
+    @Test
+    void testFindAllTasksInDatabase(){
+        var task1 = new TaskEntity();
+        task1.setTitle("task title 1");
+        task1.setDescription("task description 1");
+        task1.setCompleted(false);
+
+        var task2 = new TaskEntity();
+        task2.setTitle("task title 2");
+        task2.setDescription("task description 2");
+        task2.setCompleted(true);
+
+        var savedTask1 = testEntityManager.persist(task1);
+        var savedTask2 = testEntityManager.persist(task2);
+
+        var tasks = taskRepository.findAll();
+
+        assertNotNull(tasks);
+        assertEquals(tasks.size(), 2);
+        assertEquals(savedTask2,tasks.get(1));
+        assertEquals(savedTask1, tasks.get(0));
+
+        assertEquals(savedTask1.getId(), tasks.get(0).getId());
+    }
+
 }
